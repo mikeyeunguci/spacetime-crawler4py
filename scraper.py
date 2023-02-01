@@ -1,13 +1,10 @@
 import re
 from urllib.parse import urlparse, urldefrag
-import requests
 from bs4 import BeautifulSoup
-
-Total_links = 0
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
-    print("Total Unique Links: ", Total_links)
+    #print("Total Unique Links: ", Total_links)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
@@ -23,18 +20,21 @@ def extract_next_links(url, resp):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
 
     links = set()
-    html_content = requests.get(url).text
-    soup = BeautifulSoup(html_content, 'html.parser')
-        
+    
+    soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+
     for link in soup.find_all('a'):
         if is_valid(link.get('href')):
+            # try:
             links.add(urldefrag(link.get('href'))[0])
+            # except AttributeError:
+            #     pass
 
     # for link in links:
     #     print(link)
-    Total_links += len(links)
+    #Total_links += len(links)
 
-    return links
+    return list(links)
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -46,7 +46,7 @@ def is_valid(url):
         parsed = urlparse(url)
         
         for d in domains:
-            if d in parsed.netloc:   
+            if d in str(parsed.netloc):   
                 if parsed.scheme not in set(["http", "https"]):
                     return False
                 return not re.match(
