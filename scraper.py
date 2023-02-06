@@ -21,19 +21,35 @@ def extract_next_links(url, resp):
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     links = set()
-    if(resp.status != 200 and resp.error != None):
+    words_re = re.compile(r'\b\w+\b')
+    
+    if(resp.status != 200 or resp.error != None):
         return []
     try:
         soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
     except AttributeError:
         return []
+
+    words = []
+    stop_words = []
     
+    for word in words_re.findall(soup.text):
+        if word.lower() not in stop_words:
+            words.append(word.lower())
+    print(words)
+
+    with open("Longest.txt", "w+") as Long:
+        for line in Long:
+            count = line.split()[1]
+
+
+    with open("visited.txt", "a+") as Visit:
+        Visit.write(url)
+        Visit.write("\n")
+
     for link in soup.find_all('a'):
         print(urldefrag(link.get('href'))[0])
         links.add(urldefrag(link.get('href'))[0])
-    # for link in links:
-    #     print(link)
-    #Total_links += len(links)
 
     return list(links)
 
@@ -43,16 +59,15 @@ def is_valid(url):
     # There are already some conditions that return False.
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]
     traps = ["/events", "/event", "/calendar"]
+    visited = set()
     try:
         parsed = urlparse(url)
-        visited = set()
 
-        with open("visited.txt", "a+") as Visit:
+        with open("visited.txt", "r+") as Visit:
             for line in Visit:
-                visited.add(line)
+                visited.add(line.strip("\n"))
             if url in visited:
                 return False
-
         for d in domains:
             if d in str(parsed.netloc):
                 for trap in traps:
@@ -61,19 +76,6 @@ def is_valid(url):
 
                 if parsed.scheme not in set(["http", "https"]):
                     return False
-                
-                if not re.match(
-                    r".*\.(css|js|bmp|gif|jpe?g|ico"
-                    + r"|png|tiff?|mid|mp2|mp3|mp4"
-                    + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-                    + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
-                    + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
-                    + r"|epub|dll|cnf|tgz|sha1"
-                    + r"|thmx|mso|arff|rtf|jar|csv"
-                    + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
-                    with open("visited.txt", "a+") as Visit:
-                       Visit.write(url, "\n")
-                    
 
                 return not re.match(
                     r".*\.(css|js|bmp|gif|jpe?g|ico"
