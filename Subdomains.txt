@@ -1,0 +1,16 @@
+http://sli.ics.uci.edu,84
+http://www.ics.uci.edu,69
+https://www.informatics.uci.edu,49
+https://www.ics.uci.edu,26
+https://cml.ics.uci.edu,12
+https://dgillen.ics.uci.edu,11
+https://sli.ics.uci.edu,8
+https://www.stat.uci.edu,5
+https://www.cs.uci.edu,3
+http://www.stat.uci.edu,3
+http://www.informatics.uci.edu,2
+http://archive.ics.uci.edu,2
+https://swiki.ics.uci.edu,1
+https://support.ics.uci.edu,1
+http://keys.ics.uci.edu,1
+http://elms.ics.uci.edu,1

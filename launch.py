@@ -7,8 +7,15 @@ from crawler import Crawler
 
 
 def main(config_file, restart):
-    f = open("visited.txt", "w")
+    f = open("Visited.txt", "w")
     f.close()
+    l = open("CommonWords.txt", "w")
+    l.close()
+    a = open("Subdomains.txt", "w")
+    a.close()
+    d = open("Longest.txt", "w")
+    d.write("URL, 0")
+    d.close()
     cparser = ConfigParser()
     cparser.read(config_file)
     config = Config(cparser)
