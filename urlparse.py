@@ -1,6 +1,7 @@
 #https://www.ics.uci.edu,https://www.cs.uci.edu,https://www.informatics.uci.edu,https://www.stat.uci.edu
 import re
-from urllib.parse import urlparse, urldefrag
+from urllib.parse import urlparse, urldefrag, urljoin
+import urllib.robotparser
 import requests
 from bs4 import BeautifulSoup
 
@@ -12,6 +13,16 @@ def is_valid(url):
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]
     try:
         parsed = urlparse(url)
+        rp = urllib.robotparser.RobotFileParser()
+        
+        rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
+
+        rp.read()
+        #print("Sitemaps :", rp.site_maps())
+        # if rp.can_fetch("*", url):
+        #     print("Crawlable", url + "/robots.txt")
+        parsed.netloc
+
         
         for d in domains:
             if d in parsed.netloc:   
@@ -36,24 +47,28 @@ def is_valid(url):
 
 def main():
 
-    urls = ["https://www.ics.uci.edu", "https://www.cs.uci.edu", "https://www.informatics.uci.edu", "https://www.stat.uci.edu"]
+    urls = ["https://www.ics.uci.edu", "https://www.cs.uci.edu", "https://www.informatics.uci.edu", "https://www.stat.uci.edu", "https://www.stat.uci.edu/wp-sitemap.xml"]
 
-    links = set()
+    links = []
     for url in urls:
         html_content = requests.get(url).text
-        soup = BeautifulSoup(html_content, 'html.parser')
-        
+        soup = BeautifulSoup(html_content, 'xml')
         for link in soup.find_all('a'):
-            #print(link.get('href'))
-            if is_valid(link.get('href')):
-                #print(link.get('href'))
-                links.add(urldefrag(link.get('href'))[0])
-    #print(links)
-    for link in links:
-        print(link)
+
+            print(link.get("href"))
+        # for link in soup.findAll('a'):
+        #     parsed = urlparse(urldefrag(link.get('href'))[0])
+        #     if parsed.netloc == "":
+        #         parsed = urljoin(url, urldefrag(link.get('href'))[0])
+        #         print(parsed)
+        #         if is_valid(url):
+                    
+        #             links.append(parsed)
+        #     else:
+        #         links.append(urldefrag(link.get('href'))[0])
+    # for link in links:
+    #     print(link)
     print("Total links: ", len(links))
     
-
-
 if __name__ == "__main__":
     main()

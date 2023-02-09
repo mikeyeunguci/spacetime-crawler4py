@@ -7,6 +7,7 @@ from crawler import Crawler
 
 
 def main(config_file, restart):
+    #Creates files before running scraper.py
     f = open("Visited.txt", "w")
     f.close()
     l = open("CommonWords.txt", "w")
