@@ -38,9 +38,20 @@ def extract_next_links(url, resp):
     if(resp.status != 200 or resp.error != None):
         return []
     try:
-        soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+        if str(url).endswith(".xml"):   
+            soup = BeautifulSoup(resp.raw_response.content, 'xml')
+            for link in soup.find_all("loc"):
+                links.add(link.text)
+            with open("Visited.txt", "a+") as Visit1:
+                Visit1.write(url)
+                Visit1.write("\n")
+            return list(links)
+        else:
+            soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
     except AttributeError:
         return []
+
+
 
     # Opens CommonWords.txt and adds all words and their frequencies found throughout the crawl into filtered dictionary
     with open("CommonWords.txt", "r+") as Cw:
@@ -119,27 +130,27 @@ def extract_next_links(url, resp):
 
     # Finds all links in current url and transforms relative links into absolute urls
     # Adds absoulte urls into a set of links which is then returned as a list of links
-    for link in soup.find_all('a'):
-        parsed = urlparse(urldefrag(link.get('href'))[0])
-        if parsed.netloc == "":
-            parsed = urljoin(url, urldefrag(link.get('href'))[0])
-            links.add(parsed)
-        else:
-            links.add(urldefrag(link.get('href'))[0])
+    
+    if not str(url).endswith(".xml"):
+        for link in soup.find_all('a'):
+            parsed = urlparse(urldefrag(link.get('href'))[0])
+            if parsed.netloc == "":
+                parsed = urljoin(url, urldefrag(link.get('href'))[0])
+                links.add(parsed)
+            else:
+                links.add(urldefrag(link.get('href'))[0])
 
     # Adds sitemaps urls from current URL's robots.txt into set list of urls to return as list
     parsed = urlparse(url)
+
     rp = urllib.robotparser.RobotFileParser()
     rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
     rp.read()
     sitemap = rp.site_maps()
-    for i in sitemap:
-        try:
-            soup = BeautifulSoup(i, 'xml')
-            for link in soup.find_all('a'):
-                links.add(urldefrag(link.get('href'))[0])
-        except:
-            continue
+    if sitemap != None:
+        for i in sitemap:
+            links.add(i)
+    
     
     return list(links)
 
@@ -156,9 +167,14 @@ def is_valid(url):
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]                   
     traps = ["/events", "/event", "/calendar", "/pdf"]
     visited = set()
-
+    trapPaths = defaultdict(list)
+    parsed = urlparse(url)
     try:
-        parsed = urlparse(url)
+
+        trap1 = set(str(parsed.path).split('/'))
+        for word in trap1:
+            if str(parsed.path).split('/').count(word) > 1:
+                return False
         try:
             rp = urllib.robotparser.RobotFileParser()
             rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
@@ -172,8 +188,11 @@ def is_valid(url):
         with open("Visited.txt", "r+") as Visit:
             for line in Visit:
                 visited.add(line.strip("\n"))
+                if str(parsed.path).split('/')[-1] in line and parsed.netloc in line:
+                    return False
             if url in visited:
                 return False
+            
         for d in domains:
             if d in str(parsed.netloc):
                 for trap in traps:

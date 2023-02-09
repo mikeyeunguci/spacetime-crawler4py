@@ -3,6 +3,7 @@ import re
 from urllib.parse import urlparse, urldefrag, urljoin
 import urllib.robotparser
 import requests
+from utils import download
 from bs4 import BeautifulSoup
 
 def is_valid(url):
@@ -18,10 +19,10 @@ def is_valid(url):
         rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
 
         rp.read()
-        #print("Sitemaps :", rp.site_maps())
-        # if rp.can_fetch("*", url):
-        #     print("Crawlable", url + "/robots.txt")
-        parsed.netloc
+        print("Sitemaps :", rp.site_maps())
+        if rp.can_fetch("*", url):
+            print("Crawlable", url + "/robots.txt")
+        #parsed.netloc
 
         
         for d in domains:
@@ -47,15 +48,29 @@ def is_valid(url):
 
 def main():
 
-    urls = ["https://www.ics.uci.edu", "https://www.cs.uci.edu", "https://www.informatics.uci.edu", "https://www.stat.uci.edu", "https://www.stat.uci.edu/wp-sitemap.xml"]
-
+    urls = ["https://www.ics.uci.edu/ugrad/honors/index.php/sao/resources/degrees/overview/overview/advising/policies/overview/courses/advising/degrees/policies/sao/overview/overview/policies/resources/degrees/resources/overview/advising/policies/resources/sao/resources/policies/overview/overview/policies/policies/advising/policies/policies/degrees/policies/overview/computing/sao/degrees/resources/resources/policies/policies/overview/policies/policies/policies/policies/policies/sao/policies/resources/sao/computing/resources/overview/degrees/sao/policies/resources/computing/overview/sao/resources/overview/sao/overview/resources/degrees/resources/sao/policies/advising/policies/policies/advising/resources/sao/computing/resources/policies/overview/resources/sao/SAO_News_and_Updates.php"]
+    # , ".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu", "https://www.stat.uci.edu/wp-sitemap.xml"
     links = []
     for url in urls:
-        html_content = requests.get(url).text
-        soup = BeautifulSoup(html_content, 'xml')
-        for link in soup.find_all('a'):
+        #html_content = requests.get(url).text
+        parsed = urlparse(url)
+        
+        #soup = BeautifulSoup(html_content, 'xml')
+        lmao = set(parsed.path.split("/"))
+        for word in lmao:
+            if parsed.path.split("/").count(word) > 1:
+                return False
+        print(parsed.path.split("/"))
+        # rp = urllib.robotparser.RobotFileParser()
 
-            print(link.get("href"))
+        # rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
+        # rp.read()
+        # print(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
+        # print("Sitemaps :", rp.site_maps())
+
+
+        #for link in soup.find_all("loc"):
+            #print(link.text)
         # for link in soup.findAll('a'):
         #     parsed = urlparse(urldefrag(link.get('href'))[0])
         #     if parsed.netloc == "":

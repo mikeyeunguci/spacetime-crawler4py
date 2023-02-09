@@ -4,19 +4,25 @@ from argparse import ArgumentParser
 from utils.server_registration import get_cache_server
 from utils.config import Config
 from crawler import Crawler
+import os
 
 
 def main(config_file, restart):
     #Creates files before running scraper.py
-    f = open("Visited.txt", "w")
-    f.close()
-    l = open("CommonWords.txt", "w")
-    l.close()
-    a = open("Subdomains.txt", "w")
-    a.close()
-    d = open("Longest.txt", "w")
-    d.write("URL, 0")
-    d.close()
+    if not os.path.exists("Visited.txt"):
+        f = open("Visited.txt", "w")
+        f.close()
+    if not os.path.exists("CommonWords.txt"):
+        l = open("CommonWords.txt", "w")
+        l.close()
+    if not os.path.exists("Subdomains.txt"):
+        a = open("Subdomains.txt", "w")
+        a.close()
+
+    if not os.path.exists("Longest.txt"):
+        d = open("Longest.txt", "w")
+        d.write("URL, 0")
+        d.close()
     cparser = ConfigParser()
     cparser.read(config_file)
     config = Config(cparser)
