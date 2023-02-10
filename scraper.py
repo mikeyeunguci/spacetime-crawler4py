@@ -165,7 +165,7 @@ def is_valid(url):
     # If url already in set (visited), returns False
     # Checks robots.txt for paths to not crawl, will return False if path is Disallowed
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]                   
-    traps = ["/events", "/event", "/calendar", "/pdf"]
+    traps = ["/events", "/event", "/calendar", "/pdf", "ramesh"]
     visited = set()
     trapPaths = defaultdict(list)
     parsed = urlparse(url)
@@ -188,7 +188,7 @@ def is_valid(url):
         with open("Visited.txt", "r+") as Visit:
             for line in Visit:
                 visited.add(line.strip("\n"))
-                if str(parsed.path).split('/')[-1] in line and parsed.netloc in line:
+                if set(str(parsed.path).split('/')[:-1]).issubset(set(line.split('/'))) and parsed.netloc in line and str(parsed.path).split('/')[-1] == line.split('/')[-1]:
                     return False
             if url in visited:
                 return False

@@ -14,6 +14,7 @@ def is_valid(url):
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]
     try:
         parsed = urlparse(url)
+        
         rp = urllib.robotparser.RobotFileParser()
         
         rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
@@ -48,19 +49,19 @@ def is_valid(url):
 
 def main():
 
-    urls = ["https://www.ics.uci.edu/ugrad/honors/index.php/sao/resources/degrees/overview/overview/advising/policies/overview/courses/advising/degrees/policies/sao/overview/overview/policies/resources/degrees/resources/overview/advising/policies/resources/sao/resources/policies/overview/overview/policies/policies/advising/policies/policies/degrees/policies/overview/computing/sao/degrees/resources/resources/policies/policies/overview/policies/policies/policies/policies/policies/sao/policies/resources/sao/computing/resources/overview/degrees/sao/policies/resources/computing/overview/sao/resources/overview/sao/overview/resources/degrees/resources/sao/policies/advising/policies/policies/advising/resources/sao/computing/resources/policies/overview/resources/sao/SAO_News_and_Updates.php"]
+    urls = ["https://www.ics.uci.edu/honors/degrees/sao/policies/computing/account/resources/advising/courses/index.php"]
     # , ".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu", "https://www.stat.uci.edu/wp-sitemap.xml"
     links = []
-    for url in urls:
+    for line in urls:
         #html_content = requests.get(url).text
-        parsed = urlparse(url)
+        parsed = urlparse(line)
         
         #soup = BeautifulSoup(html_content, 'xml')
-        lmao = set(parsed.path.split("/"))
-        for word in lmao:
-            if parsed.path.split("/").count(word) > 1:
-                return False
-        print(parsed.path.split("/"))
+        line = "https://www.ics.uci.edu/honors/degrees/policies/sao/computing/account/resources/advising/courses/index.php"
+        if set(str(parsed.path).split('/')[:-1]).issubset(set(line.split('/'))) and parsed.netloc in line and str(parsed.path).split('/')[-1] == line.split('/')[-1]:
+            print("false")
+        else:
+            print("true")
         # rp = urllib.robotparser.RobotFileParser()
 
         # rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
