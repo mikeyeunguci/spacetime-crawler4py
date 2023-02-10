@@ -1,7 +1,6 @@
 import re
 from urllib.parse import urlparse, urldefrag, urljoin
 import urllib.robotparser
-from utils import download
 from collections import defaultdict
 from bs4 import BeautifulSoup
 
@@ -167,7 +166,6 @@ def is_valid(url):
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]                   
     traps = ["/events", "/event", "/calendar", "/pdf", "ramesh"]
     visited = set()
-    trapPaths = defaultdict(list)
     parsed = urlparse(url)
     try:
 
