@@ -1,1 +1,1 @@
-http://www.ics.uci.edu/~wjohnson/BIDA/Ch8/prioriterates.txt,120030
+http://www.ics.uci.edu/~shantas/publications/20-secret-sharing-aggregation-TKDE-shantanu,583561

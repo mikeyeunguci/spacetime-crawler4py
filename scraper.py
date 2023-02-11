@@ -67,7 +67,8 @@ def extract_next_links(url, resp):
 
     # sorts dictionary by frequencies in descending order
     sorted_items = sorted(filtered.items(), key=lambda x: x[1], reverse=True)
-    
+    if len(sorted_items) > 100000:
+        sorted_items = sorted_items[:100000]
     # Opens CommonWords.txt to rewrite it with current common words with their frequencies
     with open("CommonWords.txt", "w+") as Common:
         for i in range(len(sorted_items)):
@@ -113,8 +114,8 @@ def extract_next_links(url, resp):
 
     # Adds current url to SubD dictionary
     parsed = urlparse(url)
-    dom = parsed.scheme + "://" + parsed.netloc
-    SubD[dom] += 1
+    #dom = parsed.scheme + "://" + parsed.netloc
+    SubD[parsed.netloc] += 1
 
     # Sorts SubD by descending frequency and alphabetically
     sortedSubD = sorted(SubD.items(), key=lambda x: (x[1],x[0]),  reverse=True)
@@ -122,7 +123,7 @@ def extract_next_links(url, resp):
     # Writes sorted subdomains with their frequencies into Subdomains.txt
     with open("Subdomains.txt", "w+") as Sub:
         for i in range(len(sortedSubD)):
-            Sub.write(sortedSubD[i][0])
+            Sub.write(parsed.scheme + "://" + sortedSubD[i][0])
             Sub.write(",")
             Sub.write(str(sortedSubD[i][1]))
             Sub.write("\n")
@@ -164,11 +165,10 @@ def is_valid(url):
     # If url already in set (visited), returns False
     # Checks robots.txt for paths to not crawl, will return False if path is Disallowed
     domains = [".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu"]                   
-    traps = ["/events", "/event", "/calendar", "/pdf", "ramesh"]
+    traps = ["/events", "/event", "/calendar", "/pdf", "/ramesh", "/accounts","/doku.php", "?format"]
     visited = set()
     parsed = urlparse(url)
     try:
-
         trap1 = set(str(parsed.path).split('/'))
         for word in trap1:
             if str(parsed.path).split('/').count(word) > 1:
@@ -186,7 +186,7 @@ def is_valid(url):
         with open("Visited.txt", "r+") as Visit:
             for line in Visit:
                 visited.add(line.strip("\n"))
-                if set(str(parsed.path).split('/')[:-1]).issubset(set(line.split('/'))) and parsed.netloc in line and str(parsed.path).split('/')[-1] == line.split('/')[-1]:
+                if set(str(parsed.path).split('/')[1:-1]).issubset(set(line.split('/')[3:-1])) and parsed.netloc in line and str(parsed.path).split('/')[-1] == line.split('/')[-1]:
                     return False
             if url in visited:
                 return False
@@ -194,7 +194,7 @@ def is_valid(url):
         for d in domains:
             if d in str(parsed.netloc):
                 for trap in traps:
-                    if trap in parsed.path.lower():
+                    if trap in parsed.path.lower() or trap in str(parsed.query).lower():
                         return False
 
                 if parsed.scheme not in set(["http", "https"]):

@@ -49,7 +49,7 @@ def is_valid(url):
 
 def main():
 
-    urls = ["https://www.ics.uci.edu/honors/degrees/sao/policies/computing/account/resources/advising/courses/index.php"]
+    urls = ["https://archive.ics.uci.edu/ml/datasets.php?format=&task=cla&att=mix&area=soc&numAtt=10to100&numIns=less100&type=text&sort=taskUp&view=table"]
     # , ".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu", "https://www.stat.uci.edu/wp-sitemap.xml"
     links = []
     for line in urls:
@@ -57,11 +57,18 @@ def main():
         parsed = urlparse(line)
         
         #soup = BeautifulSoup(html_content, 'xml')
-        line = "https://www.ics.uci.edu/honors/degrees/policies/sao/computing/account/resources/advising/courses/index.php"
-        if set(str(parsed.path).split('/')[:-1]).issubset(set(line.split('/'))) and parsed.netloc in line and str(parsed.path).split('/')[-1] == line.split('/')[-1]:
-            print("false")
+        line = "https://www.ics.uci.edu/honors/degrees/policies/sao/computing/account/resources/courses/advising/lmao.php"
+
+        print(parsed.query)
+        print(str(parsed.path).split('/')[:-1])
+        print(line.split('/')[3:-1])
+        print(str(parsed.path).split('/')[-1])
+        print(line.split('/'))
+
+        if set(str(parsed.path).split('/')[1:-1]).issubset(set(line.split('/')[3:-1])) and parsed.netloc in line and str(parsed.path).split('/')[-1] == line.split('/')[-1]:
+            print("not valid")
         else:
-            print("true")
+            print("valid")
         # rp = urllib.robotparser.RobotFileParser()
 
         # rp.set_url(parsed.scheme + "://" + parsed.netloc + "/robots.txt")
